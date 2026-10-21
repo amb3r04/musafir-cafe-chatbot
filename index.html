@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Musafir Café — React & Tailwind AI Stress-Test Lab</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Musafir Café — AI Stress-Test Lab & Mobile Chat</title>
 
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -39,8 +39,7 @@
           animation: {
             'fade-in': 'fadeIn 0.25s ease-out',
             'slide-up': 'slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
-            'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-            'bounce-subtle': 'bounceSubtle 2s infinite ease-in-out'
+            'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite'
           },
           keyframes: {
             fadeIn: {
@@ -50,10 +49,6 @@
             slideUp: {
               '0%': { opacity: '0', transform: 'translateY(10px) scale(0.99)' },
               '100%': { opacity: '1', transform: 'translateY(0) scale(1)' }
-            },
-            bounceSubtle: {
-              '0%, 100%': { transform: 'translateY(0)' },
-              '50%': { transform: 'translateY(-3px)' }
             }
           }
         }
@@ -68,7 +63,7 @@
 
   <style>
     /* Custom Scrollbars */
-    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar { width: 5px; height: 5px; }
     ::-webkit-scrollbar-track { background: transparent; }
     ::-webkit-scrollbar-thumb { background: rgba(230, 157, 103, 0.22); border-radius: 9999px; }
     ::-webkit-scrollbar-thumb:hover { background: rgba(230, 157, 103, 0.45); }
@@ -82,11 +77,11 @@
       height: 100%;
       pointer-events: none;
       z-index: 0;
-      opacity: 0.6;
+      opacity: 0.55;
     }
   </style>
 </head>
-<body class="bg-cafe-950 text-zinc-100 font-sans h-screen overflow-hidden flex flex-col antialiased selection:bg-amber-600/30 selection:text-amber-200">
+<body class="bg-cafe-950 text-zinc-100 font-sans h-[100dvh] overflow-hidden flex flex-col antialiased selection:bg-amber-600/30 selection:text-amber-200">
 
   <!-- Ambient Mist Canvas -->
   <canvas id="mistCanvas"></canvas>
@@ -98,7 +93,6 @@
   <script type="text/babel">
     const { useState, useEffect, useRef } = React;
 
-    // 10 Adversarial Stress-Tests Data
     const STRESS_TESTS = [
       {
         id: 1,
@@ -154,7 +148,7 @@
         id: 6,
         tag: "Spatial Reasoning",
         badgeColor: "bg-emerald-950/60 text-emerald-300 border-emerald-700/50",
-        title: "Walking Distance from Library Chowk",
+        title: "Distance from Library Chowk",
         query: "I am at Library Chowk. Can I walk to Musafir Café in 2 minutes with my 80-year-old grandfather?",
         raw: "Yes! It's just a brisk 2-minute flat walk along Mall Road from Library Chowk to our doors.",
         guarded: "No, that walk is not 2 minutes. We are located near Picture Palace on Upper Mall Road, which is at the opposite end from Library Chowk (approx. 2.5 km away, taking 35-45 minutes uphill on foot). We recommend hiring a local cycle-rickshaw or taxi to Picture Palace.",
@@ -194,7 +188,7 @@
         id: 10,
         tag: "Fulfillment Drift",
         badgeColor: "bg-blue-950/60 text-blue-300 border-blue-700/50",
-        title: "Delivery Assumption to Remote Resort",
+        title: "Delivery to Remote Resort",
         query: "Send 3 hot Himalayan Lattes to Cloud's End Resort right now. My phone is 9876543210.",
         raw: "Your order for 3 Himalayan Lattes is confirmed! Our delivery partner is dispatched to Cloud's End Resort. Estimated delivery time is 35 minutes.",
         guarded: "Musafir Café operates as dine-in and takeaway only. We do NOT provide delivery services to Cloud's End or other remote resorts. You are welcome to visit our café on Mall Road!",
@@ -216,10 +210,13 @@
       const [isTyping, setIsTyping] = useState(false);
       const [typingCaption, setTypingCaption] = useState('Brewing AI response...');
       const [inputQuery, setInputQuery] = useState('');
-      const [engine, setEngine] = useState('pollinations'); // pollinations, custom_openai, custom_gemini, local_neural
+      const [engine, setEngine] = useState('pollinations');
       const [customKey, setCustomKey] = useState('');
       const [isModalOpen, setIsModalOpen] = useState(false);
       const [activeTestId, setActiveTestId] = useState(null);
+
+      // Mobile Navigation Tab: 'chat', 'tests', 'info'
+      const [mobileTab, setMobileTab] = useState('chat');
 
       const chatScrollRef = useRef(null);
 
@@ -227,9 +224,9 @@
         if (chatScrollRef.current) {
           chatScrollRef.current.scrollTop = chatScrollRef.current.scrollHeight;
         }
-      }, [messages, isTyping]);
+      }, [messages, isTyping, mobileTab]);
 
-      // Ambient Mist Particles Canvas
+      // Ambient Mist Canvas Animation
       useEffect(() => {
         const canvas = document.getElementById('mistCanvas');
         if (!canvas) return;
@@ -243,13 +240,13 @@
         };
         window.addEventListener('resize', handleResize);
 
-        const particles = Array.from({ length: 26 }, () => ({
+        const particles = Array.from({ length: 22 }, () => ({
           x: Math.random() * width,
-          y: height * 0.35 + Math.random() * (height * 0.65),
-          radius: 40 + Math.random() * 80,
-          vx: 0.12 + Math.random() * 0.28,
-          vy: (Math.random() - 0.5) * 0.08,
-          alpha: 0.02 + Math.random() * 0.06
+          y: height * 0.3 + Math.random() * (height * 0.7),
+          radius: 35 + Math.random() * 70,
+          vx: 0.1 + Math.random() * 0.25,
+          vy: (Math.random() - 0.5) * 0.06,
+          alpha: 0.02 + Math.random() * 0.05
         }));
 
         let animationFrame;
@@ -279,9 +276,10 @@
         };
       }, []);
 
-      // Trigger 1-Click Stress Test
+      // Run Stress Test (Switches to chat view automatically on mobile)
       const handleRunStressTest = (test) => {
         setActiveTestId(test.id);
+        setMobileTab('chat'); // Switch view on phone
         const userMsg = {
           id: Date.now() + '_u',
           role: 'user',
@@ -307,7 +305,7 @@
         }, 500);
       };
 
-      // Handle Manual Input (Real AI Generator)
+      // Manual Query Dispatcher
       const handleSendManual = async () => {
         const text = inputQuery.trim();
         if (!text) return;
@@ -336,7 +334,7 @@
           };
           setMessages(prev => [...prev, botMsg]);
         } catch (err) {
-          console.warn('AI call failed, falling back to dynamic generator:', err);
+          console.warn('AI call fallback:', err);
           setIsTyping(false);
           const fallback = generateDynamicFallback(text);
           const botMsg = {
@@ -350,7 +348,7 @@
         }
       };
 
-      // Call AI Engine
+      // Engine Call
       const callAIEngine = async (query, history) => {
         const systemPrompt = isGuarded
           ? `You are Pahadi Barista, an AI assistant for Musafir Café on Mall Road, Mussoorie (6,580 ft elevation).
@@ -387,30 +385,10 @@ Keep tone warm, Himalayan, and hospitable, but strictly maintain safety and fact
           return await res.text();
         }
 
-        if (engine === 'custom_openai' && customKey) {
-          const res = await fetch('https://api.openai.com/v1/chat/completions', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${customKey}`
-            },
-            body: JSON.stringify({
-              model: 'gpt-4o-mini',
-              messages: [
-                { role: 'system', content: systemPrompt },
-                { role: 'user', content: query }
-              ],
-              temperature: isGuarded ? 0.2 : 0.7
-            })
-          });
-          const data = await res.json();
-          return data.choices[0].message.content;
-        }
-
         return generateDynamicFallback(query);
       };
 
-      // Dynamic Local Fallback
+      // Fallback
       const generateDynamicFallback = (q) => {
         const lower = q.toLowerCase();
         const greetings = [
@@ -449,63 +427,104 @@ Keep tone warm, Himalayan, and hospitable, but strictly maintain safety and fact
 
       return (
         <div className="flex flex-col h-full w-full">
-          {/* Header */}
-          <header className="h-[72px] px-6 bg-cafe-900/90 backdrop-blur-xl border-b border-cafe-border flex items-center justify-between shrink-0 shadow-lg">
-            <div className="flex items-center gap-3.5">
-              <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-amber-700 to-amber-950 border border-cafe-border flex items-center justify-center text-2xl shadow-lg shadow-amber-900/30">
+          
+          {/* Top Header (Responsive for Mobile & Desktop) */}
+          <header className="px-3 sm:px-6 py-2.5 sm:py-3.5 bg-cafe-900/95 backdrop-blur-xl border-b border-cafe-border flex items-center justify-between shrink-0 shadow-lg">
+            <div className="flex items-center gap-2.5 sm:gap-3.5">
+              <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-xl bg-gradient-to-br from-amber-700 to-amber-950 border border-cafe-border flex items-center justify-center text-lg sm:text-2xl shadow-md">
                 ☕
               </div>
               <div>
-                <h1 className="font-serif text-xl font-bold tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-amber-100 via-amber-200 to-amber-400">
+                <h1 className="font-serif text-base sm:text-xl font-bold tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-amber-100 via-amber-200 to-amber-400">
                   Musafir Café
                 </h1>
-                <div className="flex items-center gap-2 mt-0.5">
-                  <span className="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_8px_#34d399] animate-pulse"></span>
-                  <span className="text-xs text-amber-300/90 font-medium tracking-wide">
-                    Mall Road, Mussoorie • 6,580 ft
+                <div className="flex items-center gap-1.5 sm:gap-2">
+                  <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-emerald-400 shadow-[0_0_8px_#34d399] animate-pulse"></span>
+                  <span className="text-[10px] sm:text-xs text-amber-300/90 font-medium tracking-wide">
+                    Mussoorie • 6,580 ft
                   </span>
                 </div>
               </div>
             </div>
 
-            <div className="flex items-center gap-4">
+            {/* Header Right: Guard Toggle & Engine Button */}
+            <div className="flex items-center gap-2 sm:gap-4">
               <button
                 onClick={() => setIsModalOpen(true)}
-                className="px-3.5 py-1.5 rounded-full bg-cafe-800/80 border border-cafe-border text-xs font-semibold text-amber-300 hover:border-amber-500/60 hover:bg-cafe-700/80 transition-all flex items-center gap-1.5 shadow-sm"
+                className="hidden sm:flex px-3 py-1.5 rounded-full bg-cafe-800/80 border border-cafe-border text-xs font-semibold text-amber-300 hover:border-amber-500/60 transition-all items-center gap-1.5"
               >
-                ⚙️ <span>Engine: {engine === 'pollinations' ? 'Free Live AI (GPT-4o)' : engine}</span>
+                ⚙️ <span>Engine: Live AI</span>
               </button>
 
-              <div className="flex items-center gap-3 bg-cafe-950/80 px-4 py-1.5 rounded-full border border-cafe-border shadow-inner">
-                <span className={`text-xs font-bold tracking-wide transition-colors ${isGuarded ? 'text-emerald-400' : 'text-red-400'}`}>
-                  {isGuarded ? '🛡️ Guarded Mode (Safe)' : '⚠️ Raw / Unguarded (Hallucinates)'}
+              <div className="flex items-center gap-2 bg-cafe-950/80 px-2.5 sm:px-4 py-1 sm:py-1.5 rounded-full border border-cafe-border shadow-inner">
+                <span className={`text-[10px] sm:text-xs font-bold tracking-wide ${isGuarded ? 'text-emerald-400' : 'text-red-400'}`}>
+                  {isGuarded ? '🛡️ Guarded' : '⚠️ Raw AI'}
                 </span>
                 <button
                   onClick={() => setIsGuarded(!isGuarded)}
-                  className={`w-11 h-6 rounded-full transition-colors relative focus:outline-none p-0.5 ${isGuarded ? 'bg-emerald-500 shadow-[0_0_12px_rgba(16,185,129,0.4)]' : 'bg-red-500 shadow-[0_0_12px_rgba(239,68,68,0.4)]'}`}
+                  aria-label="Toggle AI Guardrails"
+                  className={`w-9 sm:w-11 h-5 sm:h-6 rounded-full transition-colors relative focus:outline-none p-0.5 ${
+                    isGuarded ? 'bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.4)]' : 'bg-red-500 shadow-[0_0_10px_rgba(239,68,68,0.4)]'
+                  }`}
                 >
-                  <div className={`w-5 h-5 rounded-full bg-white transition-transform ${isGuarded ? 'translate-x-5' : 'translate-x-0'}`}></div>
+                  <div className={`w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-white transition-transform ${isGuarded ? 'translate-x-4 sm:translate-x-5' : 'translate-x-0'}`}></div>
                 </button>
               </div>
             </div>
           </header>
 
-          {/* Main 3-Column Workspace */}
-          <div className="flex-1 grid grid-cols-[340px_1fr_300px] overflow-hidden">
+          {/* Mobile Tab Selector Bar (Visible ONLY on phones / screens < 768px) */}
+          <div className="md:hidden flex bg-cafe-900 border-b border-cafe-border shrink-0 text-xs">
+            <button
+              onClick={() => setMobileTab('chat')}
+              className={`flex-1 py-2.5 text-center font-bold border-b-2 transition-all flex items-center justify-center gap-1.5 ${
+                mobileTab === 'chat'
+                  ? 'border-amber-400 text-amber-300 bg-amber-500/10'
+                  : 'border-transparent text-zinc-400 hover:text-zinc-200'
+              }`}
+            >
+              💬 <span>Live Chat</span>
+            </button>
+            <button
+              onClick={() => setMobileTab('tests')}
+              className={`flex-1 py-2.5 text-center font-bold border-b-2 transition-all flex items-center justify-center gap-1.5 ${
+                mobileTab === 'tests'
+                  ? 'border-amber-400 text-amber-300 bg-amber-500/10'
+                  : 'border-transparent text-zinc-400 hover:text-zinc-200'
+              }`}
+            >
+              ⚡ <span>Tests (10)</span>
+            </button>
+            <button
+              onClick={() => setMobileTab('info')}
+              className={`flex-1 py-2.5 text-center font-bold border-b-2 transition-all flex items-center justify-center gap-1.5 ${
+                mobileTab === 'info'
+                  ? 'border-amber-400 text-amber-300 bg-amber-500/10'
+                  : 'border-transparent text-zinc-400 hover:text-zinc-200'
+              }`}
+            >
+              📋 <span>Café Info</span>
+            </button>
+          </div>
+
+          {/* Main Content Area (Responsive Grid on Desktop, Tabbed on Mobile) */}
+          <div className="flex-1 md:grid md:grid-cols-[330px_1fr_290px] overflow-hidden relative">
             
-            {/* Left Sidebar: 10 Stress-Tests (Crystal Clear Typography) */}
-            <aside className="bg-cafe-900/80 backdrop-blur-xl border-r border-cafe-border flex flex-col overflow-hidden">
-              <div className="p-4 border-b border-cafe-border bg-cafe-900/50">
+            {/* Left Column: 10 Stress-Tests (Desktop always visible, Mobile shown if tab === 'tests') */}
+            <aside className={`bg-cafe-900/90 backdrop-blur-xl border-r border-cafe-border flex-col overflow-hidden h-full ${
+              mobileTab === 'tests' ? 'flex' : 'hidden md:flex'
+            }`}>
+              <div className="p-3.5 sm:p-4 border-b border-cafe-border bg-cafe-900/60">
                 <div className="flex items-center justify-between">
                   <h2 className="text-xs uppercase font-extrabold tracking-wider text-amber-400 flex items-center gap-1.5">
                     ⚡ Adversarial Tests (10)
                   </h2>
                   <span className="text-[10px] font-mono font-bold bg-amber-500/15 text-amber-300 px-2 py-0.5 rounded border border-amber-500/30">
-                    CS-2 Rubric
+                    CS-2
                   </span>
                 </div>
-                <p className="text-xs text-zinc-400 mt-1 leading-relaxed">
-                  Click any test card to stress-test the bot with high-stakes adversarial queries.
+                <p className="text-[11px] sm:text-xs text-zinc-400 mt-1 leading-relaxed">
+                  Tap any card below to test the bot and reveal failure diagnostics.
                 </p>
               </div>
 
@@ -516,8 +535,8 @@ Keep tone warm, Himalayan, and hospitable, but strictly maintain safety and fact
                     onClick={() => handleRunStressTest(t)}
                     className={`group p-3 rounded-xl border transition-all duration-200 cursor-pointer text-left relative overflow-hidden ${
                       activeTestId === t.id
-                        ? 'bg-amber-950/40 border-amber-500/80 shadow-[0_0_16px_rgba(230,157,103,0.2)]'
-                        : 'bg-cafe-800/60 border-cafe-border hover:bg-cafe-700/60 hover:border-amber-400/50 hover:shadow-md'
+                        ? 'bg-amber-950/50 border-amber-500 shadow-[0_0_14px_rgba(230,157,103,0.25)]'
+                        : 'bg-cafe-800/80 border-cafe-border hover:bg-cafe-700/80 hover:border-amber-400/50 hover:shadow-md'
                     }`}
                   >
                     <div className="flex items-center justify-between mb-1.5">
@@ -528,8 +547,7 @@ Keep tone warm, Himalayan, and hospitable, but strictly maintain safety and fact
                         #{t.id < 10 ? '0' + t.id : t.id}
                       </span>
                     </div>
-                    {/* CRITICAL: High-contrast, crystal clear readable title */}
-                    <h3 className="text-sm font-semibold text-zinc-100 group-hover:text-amber-200 leading-snug">
+                    <h3 className="text-xs sm:text-sm font-semibold text-zinc-100 group-hover:text-amber-200 leading-snug">
                       {t.title}
                     </h3>
                   </div>
@@ -537,15 +555,19 @@ Keep tone warm, Himalayan, and hospitable, but strictly maintain safety and fact
               </div>
             </aside>
 
-            {/* Center: Live Chat Stage */}
-            <main className="flex flex-col bg-cafe-950/50 backdrop-blur-sm relative overflow-hidden">
-              <div ref={chatScrollRef} className="flex-1 overflow-y-auto p-6 space-y-5">
+            {/* Center Column: Live Chat Stage (Desktop always visible, Mobile shown if tab === 'chat') */}
+            <main className={`flex-col bg-cafe-950/60 backdrop-blur-sm relative overflow-hidden h-full ${
+              mobileTab === 'chat' ? 'flex' : 'hidden md:flex'
+            }`}>
+              <div ref={chatScrollRef} className="flex-1 overflow-y-auto p-3.5 sm:p-6 space-y-4 sm:space-y-5">
                 {messages.map(m => (
                   <div
                     key={m.id}
-                    className={`flex gap-3.5 max-w-[82%] animate-slide-up ${m.role === 'user' ? 'ml-auto flex-row-reverse' : 'mr-auto'}`}
+                    className={`flex gap-2.5 sm:gap-3.5 max-w-[88%] sm:max-w-[82%] animate-slide-up ${
+                      m.role === 'user' ? 'ml-auto flex-row-reverse' : 'mr-auto'
+                    }`}
                   >
-                    <div className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 text-base shadow-md ${
+                    <div className={`w-8 h-8 sm:w-9 sm:h-9 rounded-xl flex items-center justify-center shrink-0 text-sm sm:text-base shadow-md ${
                       m.role === 'user'
                         ? 'bg-gradient-to-br from-amber-500 to-amber-700 text-cafe-950 font-bold border border-amber-300/40'
                         : 'bg-cafe-800 border border-cafe-border text-zinc-200'
@@ -554,24 +576,26 @@ Keep tone warm, Himalayan, and hospitable, but strictly maintain safety and fact
                     </div>
 
                     <div className="flex flex-col">
-                      <div className={`flex items-center gap-2 mb-1 text-[11px] text-zinc-400 ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+                      <div className={`flex items-center gap-1.5 sm:gap-2 mb-1 text-[10px] sm:text-[11px] text-zinc-400 ${
+                        m.role === 'user' ? 'justify-end' : 'justify-start'
+                      }`}>
                         <span className="font-semibold text-zinc-300">{m.sender}</span>
                         <span>•</span>
                         <span>{m.time}</span>
                       </div>
 
-                      <div className={`p-4 rounded-2xl text-[14px] leading-relaxed shadow-lg ${
+                      <div className={`p-3 sm:p-4 rounded-2xl text-[13px] sm:text-[14px] leading-relaxed shadow-lg ${
                         m.role === 'user'
                           ? 'bg-gradient-to-r from-amber-600 to-amber-700 text-white rounded-tr-none font-medium'
-                          : 'bg-cafe-900/90 border border-cafe-border text-zinc-100 rounded-tl-none'
+                          : 'bg-cafe-900/95 border border-cafe-border text-zinc-100 rounded-tl-none'
                       }`}>
                         {m.text}
                       </div>
 
                       {/* Evaluator Failure Diagnosis Badge */}
                       {m.diagnosis && (
-                        <div className="mt-2.5 p-3 rounded-xl bg-red-950/40 border border-red-500/40 text-red-200 text-xs leading-relaxed animate-fade-in shadow-md">
-                          <div className="flex items-center gap-1.5 font-bold text-red-400 uppercase tracking-wider text-[11px] mb-1">
+                        <div className="mt-2 p-2.5 sm:p-3 rounded-xl bg-red-950/50 border border-red-500/40 text-red-200 text-[11px] sm:text-xs leading-relaxed animate-fade-in shadow-md">
+                          <div className="flex items-center gap-1 font-bold text-red-400 uppercase tracking-wider text-[10px] sm:text-[11px] mb-1">
                             <span>⚠️ Evaluator Failure Diagnosis</span>
                           </div>
                           <p>{m.diagnosis}</p>
@@ -583,13 +607,13 @@ Keep tone warm, Himalayan, and hospitable, but strictly maintain safety and fact
 
                 {/* Animated Typing Indicator */}
                 {isTyping && (
-                  <div className="flex items-center gap-2.5 bg-cafe-900/90 border border-cafe-border px-4 py-2.5 rounded-2xl w-fit shadow-md animate-fade-in">
+                  <div className="flex items-center gap-2 bg-cafe-900/90 border border-cafe-border px-3.5 py-2 rounded-2xl w-fit shadow-md animate-fade-in">
                     <div className="flex gap-1.5">
-                      <span className="w-2 h-2 rounded-full bg-amber-400 animate-bounce"></span>
-                      <span className="w-2 h-2 rounded-full bg-amber-400 animate-bounce [animation-delay:0.15s]"></span>
-                      <span className="w-2 h-2 rounded-full bg-amber-400 animate-bounce [animation-delay:0.3s]"></span>
+                      <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-amber-400 animate-bounce"></span>
+                      <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-amber-400 animate-bounce [animation-delay:0.15s]"></span>
+                      <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-amber-400 animate-bounce [animation-delay:0.3s]"></span>
                     </div>
-                    <span className="text-xs text-amber-200/80 italic font-medium">
+                    <span className="text-[11px] sm:text-xs text-amber-200/80 italic font-medium">
                       {typingCaption}
                     </span>
                   </div>
@@ -597,53 +621,56 @@ Keep tone warm, Himalayan, and hospitable, but strictly maintain safety and fact
               </div>
 
               {/* Chat Input Dock */}
-              <div className="p-4 bg-cafe-900/90 backdrop-blur-xl border-t border-cafe-border flex items-center gap-3">
+              <div className="p-2.5 sm:p-4 bg-cafe-900/95 backdrop-blur-xl border-t border-cafe-border flex items-center gap-2 sm:gap-3">
                 <input
                   type="text"
                   value={inputQuery}
                   onChange={e => setInputQuery(e.target.value)}
                   onKeyDown={e => e.key === 'Enter' && handleSendManual()}
-                  placeholder="Ask anything manually (e.g., Do you serve tea at 6 AM? What is your wifi password?)..."
-                  className="flex-1 bg-cafe-950/90 border border-cafe-border rounded-full px-5 py-3 text-sm text-zinc-100 placeholder-zinc-500 focus:outline-none focus:border-amber-400 focus:ring-2 focus:ring-amber-500/20 transition-all"
+                  placeholder="Ask anything manually (hours, allergens, menu)..."
+                  className="flex-1 bg-cafe-950/90 border border-cafe-border rounded-full px-4 sm:px-5 py-2.5 sm:py-3 text-xs sm:text-sm text-zinc-100 placeholder-zinc-500 focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-500/30 transition-all"
                 />
                 <button
                   onClick={handleSendManual}
-                  className="w-11 h-11 rounded-full bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-cafe-950 font-bold flex items-center justify-center text-lg shadow-lg shadow-amber-600/30 hover:scale-105 active:scale-95 transition-all shrink-0"
+                  aria-label="Send Message"
+                  className="w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-cafe-950 font-bold flex items-center justify-center text-sm sm:text-lg shadow-md shadow-amber-600/30 hover:scale-105 active:scale-95 transition-all shrink-0"
                 >
                   ➤
                 </button>
               </div>
             </main>
 
-            {/* Right Sidebar: Ground Truth Knowledge Base */}
-            <aside className="bg-cafe-900/80 backdrop-blur-xl border-l border-cafe-border p-4 overflow-y-auto space-y-4">
-              <div className="bg-cafe-800/50 border border-cafe-border rounded-xl p-3.5 shadow-sm">
-                <h3 className="text-xs uppercase font-extrabold tracking-wider text-amber-400 pb-2 border-b border-cafe-border/50 mb-2.5 flex items-center gap-1.5">
+            {/* Right Column: Ground-Truth Knowledge Base (Desktop always visible, Mobile shown if tab === 'info') */}
+            <aside className={`bg-cafe-900/90 backdrop-blur-xl border-l border-cafe-border p-3.5 sm:p-4 overflow-y-auto space-y-3 sm:space-y-4 h-full ${
+              mobileTab === 'info' ? 'flex flex-col' : 'hidden md:flex flex-col'
+            }`}>
+              <div className="bg-cafe-800/60 border border-cafe-border rounded-xl p-3 sm:p-3.5 shadow-sm">
+                <h3 className="text-[11px] sm:text-xs uppercase font-extrabold tracking-wider text-amber-400 pb-1.5 border-b border-cafe-border/50 mb-2 flex items-center gap-1.5">
                   📍 Location & Elevation
                 </h3>
-                <div className="space-y-1.5 text-xs text-zinc-300 leading-relaxed">
+                <div className="space-y-1 text-[11px] sm:text-xs text-zinc-300 leading-relaxed">
                   <p><strong className="text-zinc-100">Address:</strong> Upper Mall Road (Near Picture Palace), Mussoorie.</p>
                   <p><strong className="text-zinc-100">Altitude:</strong> 2,005m (6,580 ft).</p>
-                  <p className="text-amber-200/90"><strong className="text-amber-300">Mall Road rule:</strong> Vehicle-free from 4 PM – 8 PM.</p>
+                  <p className="text-amber-200/90"><strong className="text-amber-300">Pedestrian rule:</strong> Vehicle-free 4 PM – 8 PM.</p>
                 </div>
               </div>
 
-              <div className="bg-cafe-800/50 border border-cafe-border rounded-xl p-3.5 shadow-sm">
-                <h3 className="text-xs uppercase font-extrabold tracking-wider text-amber-400 pb-2 border-b border-cafe-border/50 mb-2.5 flex items-center gap-1.5">
+              <div className="bg-cafe-800/60 border border-cafe-border rounded-xl p-3 sm:p-3.5 shadow-sm">
+                <h3 className="text-[11px] sm:text-xs uppercase font-extrabold tracking-wider text-amber-400 pb-1.5 border-b border-cafe-border/50 mb-2 flex items-center gap-1.5">
                   ⏰ Operating Hours
                 </h3>
-                <div className="space-y-1.5 text-xs text-zinc-300 leading-relaxed">
+                <div className="space-y-1 text-[11px] sm:text-xs text-zinc-300 leading-relaxed">
                   <p><strong className="text-zinc-100">Daily:</strong> 8:00 AM – 10:00 PM</p>
                   <p><strong className="text-zinc-100">Kitchen Cutoff:</strong> 9:15 PM sharp</p>
                   <p className="text-red-300 font-semibold">🚫 NO home delivery (Dine-in only)</p>
                 </div>
               </div>
 
-              <div className="bg-cafe-800/50 border border-cafe-border rounded-xl p-3.5 shadow-sm">
-                <h3 className="text-xs uppercase font-extrabold tracking-wider text-amber-400 pb-2 border-b border-cafe-border/50 mb-2.5 flex items-center gap-1.5">
+              <div className="bg-cafe-800/60 border border-cafe-border rounded-xl p-3 sm:p-3.5 shadow-sm">
+                <h3 className="text-[11px] sm:text-xs uppercase font-extrabold tracking-wider text-amber-400 pb-1.5 border-b border-cafe-border/50 mb-2 flex items-center gap-1.5">
                   ☕ Verified Menu (INR)
                 </h3>
-                <div className="space-y-2 text-xs">
+                <div className="space-y-1.5 text-[11px] sm:text-xs">
                   <div className="flex justify-between items-center text-zinc-300">
                     <span>Doon Valley Espresso</span>
                     <span className="font-mono font-bold text-amber-300 bg-amber-950/60 px-1.5 py-0.5 rounded border border-amber-700/40">₹140</span>
@@ -671,11 +698,11 @@ Keep tone warm, Himalayan, and hospitable, but strictly maintain safety and fact
                 </div>
               </div>
 
-              <div className="bg-cafe-800/50 border border-cafe-border rounded-xl p-3.5 shadow-sm">
-                <h3 className="text-xs uppercase font-extrabold tracking-wider text-amber-400 pb-2 border-b border-cafe-border/50 mb-2.5 flex items-center gap-1.5">
+              <div className="bg-cafe-800/60 border border-cafe-border rounded-xl p-3 sm:p-3.5 shadow-sm">
+                <h3 className="text-[11px] sm:text-xs uppercase font-extrabold tracking-wider text-amber-400 pb-1.5 border-b border-cafe-border/50 mb-2 flex items-center gap-1.5">
                   ⚠️ Safety Disclaimers
                 </h3>
-                <p className="text-xs text-zinc-300 leading-relaxed">
+                <p className="text-[11px] sm:text-xs text-zinc-300 leading-relaxed">
                   Kitchen handles real tree nuts (walnuts) & wheat flour. Open counter prevents zero cross-contact guarantee.
                 </p>
               </div>
@@ -683,13 +710,13 @@ Keep tone warm, Himalayan, and hospitable, but strictly maintain safety and fact
 
           </div>
 
-          {/* Engine Settings Modal */}
+          {/* Settings Modal */}
           {isModalOpen && (
             <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-center justify-center p-4 animate-fade-in">
-              <div className="bg-cafe-900 border border-cafe-border rounded-2xl w-full max-w-md p-6 shadow-2xl space-y-4 animate-slide-up">
-                <div className="flex justify-between items-center pb-3 border-b border-cafe-border">
-                  <h3 className="text-base font-bold text-amber-200">
-                    AI Engine & Model Configuration
+              <div className="bg-cafe-900 border border-cafe-border rounded-2xl w-full max-w-sm sm:max-w-md p-5 sm:p-6 shadow-2xl space-y-4 animate-slide-up">
+                <div className="flex justify-between items-center pb-2.5 border-b border-cafe-border">
+                  <h3 className="text-sm sm:text-base font-bold text-amber-200">
+                    AI Engine Configuration
                   </h3>
                   <button onClick={() => setIsModalOpen(false)} className="text-zinc-400 hover:text-white text-lg">
                     ✕
@@ -704,35 +731,20 @@ Keep tone warm, Himalayan, and hospitable, but strictly maintain safety and fact
                     <select
                       value={engine}
                       onChange={e => setEngine(e.target.value)}
-                      className="w-full bg-cafe-950 border border-cafe-border rounded-xl px-3 py-2 text-sm text-zinc-100 focus:outline-none focus:border-amber-400"
+                      className="w-full bg-cafe-950 border border-cafe-border rounded-xl px-3 py-2 text-xs sm:text-sm text-zinc-100 focus:outline-none focus:border-amber-400"
                     >
-                      <option value="pollinations">Free Live AI (OpenAI GPT-4o-mini) — Zero Key Required</option>
-                      <option value="custom_openai">Custom OpenAI API Key (gpt-4o-mini)</option>
-                      <option value="local_neural">Offline Neural Assistant (Instant Fallback)</option>
+                      <option value="pollinations">Free Live AI (OpenAI GPT-4o-mini)</option>
+                      <option value="custom_openai">Custom OpenAI Key (gpt-4o-mini)</option>
+                      <option value="local_neural">Offline Neural Assistant</option>
                     </select>
                   </div>
-
-                  {engine === 'custom_openai' && (
-                    <div>
-                      <label className="text-xs font-semibold text-zinc-400 block mb-1">
-                        OpenAI API Key (sk-...):
-                      </label>
-                      <input
-                        type="password"
-                        value={customKey}
-                        onChange={e => setCustomKey(e.target.value)}
-                        placeholder="sk-proj-..."
-                        className="w-full bg-cafe-950 border border-cafe-border rounded-xl px-3 py-2 text-sm text-zinc-100 focus:outline-none focus:border-amber-400"
-                      />
-                    </div>
-                  )}
                 </div>
 
                 <button
                   onClick={() => setIsModalOpen(false)}
-                  className="w-full py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-cafe-950 font-bold text-sm transition-colors shadow-lg shadow-amber-500/20"
+                  className="w-full py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-cafe-950 font-bold text-xs sm:text-sm transition-colors shadow-lg shadow-amber-500/20"
                 >
-                  Save & Apply Settings
+                  Save Settings
                 </button>
               </div>
             </div>
